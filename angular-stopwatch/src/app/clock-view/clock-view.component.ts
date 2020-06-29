@@ -50,7 +50,8 @@ export class ClockViewComponent implements OnInit {
   }
 
   onWait() {
-    console.log('sosi pisyu');
+    this.appService.waitClock();
+    this.rotate();
   }
 
   constructor(public appService: appService) {}
