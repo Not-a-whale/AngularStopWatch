@@ -9,9 +9,6 @@ import { Subscription } from 'rxjs';
 })
 export class ClockViewComponent implements OnInit {
   // Getting DOM Elements
-  /*   @ViewChild("reset", {static: false}) reset: ElementRef;
-  @ViewChild("closeSharp", {static: false}) closeSharp: ElementRef;
-  @ViewChild("continueButton", {static: false}) continueButton: ElementRef; */
   @ViewChild('hr', { static: false }) hr: ElementRef;
   @ViewChild('mn', { static: false }) mn: ElementRef;
   @ViewChild('sc', { static: false }) sc: ElementRef;
