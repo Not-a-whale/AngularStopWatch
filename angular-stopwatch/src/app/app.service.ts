@@ -27,6 +27,7 @@ export class appService {
   mm = 0;
   ss = 0;
   isStarted = false;
+  hasPaused = false;
   clickWaitCount = 0;
   interval = null;
 
@@ -46,12 +47,13 @@ export class appService {
     }
   }
   startStopClock() {
-    if (!this.isStarted) {
+    if (this.isStarted === false) {
       // Start stopwatch (by calling setInterval() function
       this.interval = setInterval(() => {
         this.stopWatch();
       }, 1000);
       this.isStarted = true;
+      this.hasPaused = false;
     } else {
       this.ss = 0;
       this.mm = 0;
@@ -61,22 +63,24 @@ export class appService {
       this.getSeconds(this.ss);
       window.clearInterval(this.interval);
       this.isStarted = false;
+      this.hasPaused = true;
     }
   }
 
   resetClock() {
-    this.ss = 0;
-    this.mm = 0;
-    this.hh = 0;
-    this.getHours(this.hh);
-    this.getMinutes(this.mm);
-    this.getSeconds(this.ss);
-    window.clearInterval(this.interval);
-    this.interval = window.setInterval(() => {
-      this.stopWatch();
-    }, 1000);
-
-    !this.isStarted;
+    if (this.hasPaused === false) {
+      this.ss = 0;
+      this.mm = 0;
+      this.hh = 0;
+      this.getHours(this.hh);
+      this.getMinutes(this.mm);
+      this.getSeconds(this.ss);
+      window.clearInterval(this.interval);
+      this.interval = window.setInterval(() => {
+        this.stopWatch();
+      }, 1000);
+      !this.isStarted;
+    }
   }
 
   waitClock() {
@@ -87,6 +91,7 @@ export class appService {
     if (this.clickWaitCount >= 2) {
       window.clearInterval(this.interval);
       this.isStarted = false;
+      this.hasPaused = true;
     }
   }
 }
