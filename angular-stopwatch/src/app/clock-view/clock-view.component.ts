@@ -27,12 +27,11 @@ export class ClockViewComponent implements OnInit {
   rotate() {
     this.secondsChangedSub = this.appService.seconds.subscribe((seconds) => {
       this.seconds = seconds;
-
       this.sc.nativeElement.style.transform = `rotateZ(${this.seconds}deg)`;
     });
     this.minutesChangedSub = this.appService.minutes.subscribe((minutes) => {
       this.minutes = minutes;
-      this.mn.nativeElement.transform = `rotateZ(${this.minutes}deg)`;
+      this.mn.nativeElement.style.transform = `rotateZ(${this.minutes}deg)`;
     });
     this.hoursChangedSub = this.appService.hours.subscribe((hours) => {
       this.hr.nativeElement.style.transform = `rotateZ(${this.hours}deg)`;

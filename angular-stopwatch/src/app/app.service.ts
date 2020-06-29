@@ -52,7 +52,7 @@ export class appService {
       // Start stopwatch (by calling setInterval() function
       this.interval = setInterval(() => {
         this.stopWatch();
-      }, 1000);
+      }, 100);
       this.isStarted = true;
     } else {
       this.ss = 0;
