@@ -95,6 +95,16 @@
   width: 10px;
   height: 30px;
   background: black;
+
+  span {
+    color: #fff;
+    font-weight: bold;
+  }
+  span#startStopLabel {
+    transform: rotateZ(-90deg);
+    margin-top: 65px;
+    margin-right: 2px;
+  }
 }
 
 .button:hover {
@@ -121,20 +131,29 @@
   transform: rotateZ(30deg);
 }
 
+.button__startStop {
+  width: 17px;
+  height: 40px;
+  top: -12.5%;
+}
+
 .button__rectangle--wait,
 .button__rectangle--reset {
   position: absolute;
-  top: -10%;
-  left: -97%;
-  width: 30px;
+  top: -17%;
+  left: -155%;
+  width: 40px;
   height: 20px;
   background: black;
 }
 
 .button__rectangle--startStop {
   position: absolute;
-  top: -85%;
-  left: -96%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: -68%;
+  left: -37%;
   width: 30px;
   height: 30px;
   background: transparent;

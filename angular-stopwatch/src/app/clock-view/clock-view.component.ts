@@ -20,6 +20,7 @@ export class ClockViewComponent implements OnInit {
   hours = 0;
   minutes = 0;
   seconds = 0;
+  isStarted = false;
 
   rotate() {
     this.secondsChangedSub = this.appService.seconds.subscribe((seconds) => {
@@ -43,11 +44,17 @@ export class ClockViewComponent implements OnInit {
   onStartStop() {
     this.appService.startStopClock();
     this.rotate();
+    this.isStarted = !this.isStarted;
   }
 
   onWait() {
+    // this kinda violates DRY principle, but creating a whole other Subscription would've been even more cumbersome solution
     this.appService.waitClock();
     this.rotate();
+    if (this.appService.clickWaitCount >= 2) {
+      this.isStarted = false;
+      console.log(this.isStarted);
+    }
   }
 
   constructor(public appService: appService) {}

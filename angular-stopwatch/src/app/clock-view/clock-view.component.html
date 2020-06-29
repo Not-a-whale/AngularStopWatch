@@ -1,13 +1,19 @@
 <div class="container">
   <div class="clock">
     <div class="button button__reset" #reset (click)="onReset()">
-      <div class="button__rectangle button__rectangle--reset"></div>
+      <div class="button__rectangle button__rectangle--reset">
+        <span>reset</span>
+      </div>
     </div>
     <div class="button button__startStop" #startStop (click)="onStartStop()">
-      <div class="button__rectangle button__rectangle--startStop"></div>
+      <div class="button__rectangle button__rectangle--startStop">
+        <span id="startStopLabel">{{ isStarted ? "stop" : "start" }}</span>
+      </div>
     </div>
     <div class="button button__wait" #wait (click)="onWait()">
-      <div class="button__rectangle button__rectangle--wait"></div>
+      <div class="button__rectangle button__rectangle--wait">
+        <span>wait</span>
+      </div>
     </div>
     <div class="hour">
       <div class="hr" id="hr" #hr></div>
