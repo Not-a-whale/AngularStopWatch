@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { Subject, pipe } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { Injectable, ElementRef } from '@angular/core';
+import { Subject, pipe, Observable, Subscription, interval } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -26,32 +26,59 @@ export class appService {
   hh = 0;
   mm = 0;
   ss = 0;
+
   isStarted = false;
   hasPaused = false;
+  isWaiting = false;
+
   clickWaitCount = 0;
-  interval = null;
+  customIntervalObservable = Observable.create((observer) => {
+    let count = this.deg;
+    if (this.isWaiting) {
+      count = this.ss + this.deg;
+    }
+    setInterval(() => {
+      observer.next(count);
+      count = this.ss + this.deg;
+    }, 1000);
+  });
+  // subscription for interval observable
+  intervalSubscription: Subscription;
 
-  stopWatch() {
-    this.ss = this.ss + this.deg;
-    this.getSeconds(this.ss);
-    if (this.ss / (60 * this.deg) === 1) {
-      this.ss = 0;
-      this.mm = this.mm + 6;
-      this.getMinutes(this.mm);
+  customTimeoutObservable = Observable.create((observer) => {
+    setTimeout(() => {
+      observer.next(0);
+    }, 300);
+  });
+  timeoutSubscription: Subscription;
 
-      if (this.mm / (60 * this.deg) === 1) {
-        this.mm = 0;
-        this.hh = this.hh + 6;
-        this.getHours(this.hh);
-      }
+  stopWatch(isSubscribed) {
+    if (isSubscribed) {
+      this.intervalSubscription = this.customIntervalObservable.subscribe(
+        (sec) => {
+          this.ss = sec;
+          this.getSeconds(this.ss);
+          if (this.ss / (60 * this.deg) === 1) {
+            this.ss = 0;
+            this.mm = this.mm + 6;
+            this.getMinutes(this.mm);
+
+            if (this.mm / (60 * this.deg) === 1) {
+              this.mm = 0;
+              this.hh = this.hh + 6;
+              this.getHours(this.hh);
+            }
+          }
+        }
+      );
+    } else {
+      this.intervalSubscription.unsubscribe();
     }
   }
   startStopClock() {
     if (this.isStarted === false) {
       // Start stopwatch (by calling setInterval() function
-      this.interval = setInterval(() => {
-        this.stopWatch();
-      }, 1000);
+      this.stopWatch(true);
       this.isStarted = true;
       this.hasPaused = false;
     } else {
@@ -61,7 +88,7 @@ export class appService {
       this.getHours(this.hh);
       this.getMinutes(this.mm);
       this.getSeconds(this.ss);
-      window.clearInterval(this.interval);
+      this.stopWatch(false);
       this.isStarted = false;
       this.hasPaused = true;
     }
@@ -75,23 +102,27 @@ export class appService {
       this.getHours(this.hh);
       this.getMinutes(this.mm);
       this.getSeconds(this.ss);
-      window.clearInterval(this.interval);
-      this.interval = window.setInterval(() => {
-        this.stopWatch();
-      }, 1000);
+      this.stopWatch(false);
+      this.stopWatch(true);
       !this.isStarted;
     }
   }
 
   waitClock() {
-    this.clickWaitCount++;
-    setTimeout(() => {
-      this.clickWaitCount = 0;
-    }, 300);
+    if (this.isStarted) {
+      this.clickWaitCount++;
+      this.timeoutSubscription = this.customTimeoutObservable.subscribe(
+        (nul) => {
+          this.clickWaitCount = nul;
+          this.timeoutSubscription.unsubscribe();
+        }
+      );
+    }
     if (this.clickWaitCount >= 2) {
-      window.clearInterval(this.interval);
+      this.stopWatch(false);
       this.isStarted = false;
       this.hasPaused = true;
+      this.isWaiting = true;
     }
   }
 }

@@ -53,11 +53,16 @@ export class ClockViewComponent implements OnInit {
     this.rotate();
     if (this.appService.clickWaitCount >= 2) {
       this.isStarted = false;
-      console.log(this.isStarted);
     }
   }
 
   constructor(public appService: appService) {}
 
   ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    this.hoursChangedSub.unsubscribe();
+    this.minutesChangedSub.unsubscribe();
+    this.secondsChangedSub.unsubscribe();
+  }
 }
