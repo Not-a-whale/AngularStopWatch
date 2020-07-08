@@ -1,6 +1,20 @@
 import { Injectable, ElementRef } from '@angular/core';
-import { Subject, pipe, Observable, Subscription, interval } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {
+  Subject,
+  pipe,
+  Observable,
+  Subscription,
+  interval,
+  fromEvent,
+} from 'rxjs';
+import {
+  map,
+  throttleTime,
+  takeUntil,
+  buffer,
+  debounceTime,
+  filter,
+} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -31,26 +45,19 @@ export class appService {
   hasPaused = false;
   isWaiting = false;
 
-  clickWaitCount = 0;
-  customIntervalObservable = Observable.create((observer) => {
-    let count = this.deg;
-    if (this.isWaiting) {
-      count = this.ss + this.deg;
-    }
-    setInterval(() => {
-      observer.next(count);
-      count = this.ss + this.deg;
-    }, 1000);
-  });
-  // subscription for interval observable
-  intervalSubscription: Subscription;
+  start$ = new Subject();
 
-  customTimeoutObservable = Observable.create((observer) => {
-    setTimeout(() => {
-      observer.next(0);
-    }, 300);
-  });
-  timeoutSubscription: Subscription;
+  doubleClick = new Subject<boolean>();
+
+  clickWaitCount = 0;
+
+  customIntervalObservable = interval(1000).pipe(
+    takeUntil(this.doubleClick),
+    map((value) => {
+      return this.ss + this.deg;
+    })
+  );
+  intervalSubscription: Subscription;
 
   stopWatch(isSubscribed) {
     if (isSubscribed) {
@@ -108,21 +115,25 @@ export class appService {
     }
   }
 
-  waitClock() {
+  waitClock(el: ElementRef) {
     if (this.isStarted) {
-      this.clickWaitCount++;
-      this.timeoutSubscription = this.customTimeoutObservable.subscribe(
-        (nul) => {
-          this.clickWaitCount = nul;
-          this.timeoutSubscription.unsubscribe();
-        }
-      );
-    }
-    if (this.clickWaitCount >= 2) {
-      this.stopWatch(false);
-      this.isStarted = false;
-      this.hasPaused = true;
-      this.isWaiting = true;
+      const clicks$ = fromEvent(el.nativeElement, 'click');
+
+      clicks$
+        .pipe(
+          buffer(clicks$.pipe(debounceTime(300))),
+          map((list) => {
+            return list.length;
+          }),
+          filter((x) => x === 2)
+        )
+        .subscribe(() => {
+          this.stopWatch(false);
+          this.isStarted = false;
+          this.hasPaused = true;
+          this.isWaiting = true;
+          this.doubleClick.next();
+        });
     }
   }
 }

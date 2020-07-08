@@ -12,6 +12,7 @@ export class ClockViewComponent implements OnInit {
   @ViewChild('hr', { static: false }) hr: ElementRef;
   @ViewChild('mn', { static: false }) mn: ElementRef;
   @ViewChild('sc', { static: false }) sc: ElementRef;
+  @ViewChild('wait', { static: false }) wait: ElementRef;
 
   hoursChangedSub: Subscription;
   minutesChangedSub: Subscription;
@@ -48,12 +49,7 @@ export class ClockViewComponent implements OnInit {
   }
 
   onWait() {
-    // this kinda violates DRY principle, but creating a whole other Subscription would've been even more cumbersome solution
-    this.appService.waitClock();
-    this.rotate();
-    if (this.appService.clickWaitCount >= 2) {
-      this.isStarted = false;
-    }
+    this.appService.waitClock(this.wait);
   }
 
   constructor(public appService: appService) {}
